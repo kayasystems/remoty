@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Create admin-specific axios instance for port 8002
 const adminApi = axios.create({
-  baseURL: 'http://localhost:8002',
+  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:8002',
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',

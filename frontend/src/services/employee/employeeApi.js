@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Employee API instance targeting port 8003
 const employeeApi = axios.create({
-  baseURL: 'http://localhost:8003',
+  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:8003',
   headers: {
     'Content-Type': 'application/json',
   },

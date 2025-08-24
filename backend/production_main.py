@@ -65,8 +65,8 @@ def root():
 def health_check():
     return {"status": "healthy", "service": "remoty-api"}
 
-@app.post("/auth/login", response_model=LoginResponse)
-def login(request: LoginRequest):
+@app.post("/employer/login", response_model=LoginResponse)
+def employer_login(request: LoginRequest):
     user = MOCK_USERS.get(request.email)
     if not user or user["password"] != request.password:
         raise HTTPException(status_code=401, detail="Invalid credentials")
@@ -79,8 +79,8 @@ def login(request: LoginRequest):
         user_type=user["user_type"]
     )
 
-@app.get("/auth/me", response_model=UserResponse)
-def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
+@app.get("/employer/profile", response_model=UserResponse)
+def get_employer_profile(credentials: HTTPAuthorizationCredentials = Depends(security)):
     token = credentials.credentials
     
     # Mock token validation - replace with real JWT validation
