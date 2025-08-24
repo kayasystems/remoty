@@ -1,0 +1,18 @@
+from pydantic import BaseModel
+from typing import Optional
+from datetime import datetime, date, time
+from enum import Enum
+
+class {{ model_name }}Base(BaseModel):
+{% for field, field_type in fields.items() %}
+    {{ field }}: Optional[{{ field_type }}]
+{% endfor %}
+
+class {{ model_name }}Create({{ model_name }}Base):
+    pass
+
+class {{ model_name }}Read({{ model_name }}Base):
+    id: int
+
+    class Config:
+        orm_mode = True

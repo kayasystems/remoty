@@ -1,0 +1,1 @@
+# Coworking authentication module

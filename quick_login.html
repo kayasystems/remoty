@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quick Login - Set JWT Token</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; }
+        .token-input { width: 100%; padding: 10px; margin: 10px 0; }
+        .btn { background: #8B2635; color: white; padding: 10px 20px; border: none; cursor: pointer; }
+        .success { color: green; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Quick Login - Set JWT Token</h1>
+        <p>Use this token for testing:</p>
+        <input type="text" class="token-input" id="tokenInput" value="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwicm9sZSI6ImVtcGxveWVyIiwiZXhwIjoxNzU0NjA5MjI0fQ.u_t7dUtFsNZFv3qysi1bRhK8BGC8D1iuYfAI9brYuEs">
+        <br>
+        <button class="btn" onclick="setToken()">Set Token in localStorage</button>
+        <div id="message"></div>
+        
+        <h3>Quick Links:</h3>
+        <ul>
+            <li><a href="http://localhost:3000/employer/tasks">Tasks Page</a></li>
+            <li><a href="http://localhost:3000/employer/tasks/52">Task 52 Detail</a></li>
+            <li><a href="http://localhost:3000/employer/tasks/53">Task 53 Detail</a></li>
+            <li><a href="http://localhost:3000/employer/tasks/54">Task 54 Detail</a></li>
+        </ul>
+    </div>
+
+    <script>
+        function setToken() {
+            const token = document.getElementById('tokenInput').value;
+            localStorage.setItem('token', token);
+            document.getElementById('message').innerHTML = '<div class="success">✅ Token set successfully! You can now access the protected pages.</div>';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quick Login - Remoty</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 50px auto; padding: 20px; }
+        .container { background: #f5f5f5; padding: 30px; border-radius: 10px; }
+        button { background: #8B2635; color: white; padding: 15px 30px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; }
+        button:hover { background: #7a1f2b; }
+        .success { color: green; margin-top: 20px; }
+        .token { background: #e8e8e8; padding: 10px; border-radius: 5px; word-break: break-all; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Quick Login - Remoty</h1>
+        <p>Click the button below to automatically log in as Test Employer and set the authentication token.</p>
+        
+        <button onclick="setToken()">Login as Test Employer</button>
+        
+        <div id="result"></div>
+        
+        <h3>Manual Token (if needed):</h3>
+        <div class="token">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwicm9sZSI6ImVtcGxveWVyIiwiZXhwIjoxNzU0NjA5MjI0fQ.u_t7dUtFsNZFv3qysi1bRhK8BGC8D1iuYfAI9brYuEs</div>
+    </div>
+
+    <script>
+        function setToken() {
+            const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwicm9sZSI6ImVtcGxveWVyIiwiZXhwIjoxNzU0NjA5MjI0fQ.u_t7dUtFsNZFv3qysi1bRhK8BGC8D1iuYfAI9brYuEs';
+            
+            localStorage.setItem('token', token);
+            
+            document.getElementById('result').innerHTML = `
+                <div class="success">
+                    ✅ <strong>Success!</strong> Authentication token has been set.<br><br>
+                    <strong>Next steps:</strong><br>
+                    1. Go to <a href="/employer/tasks" target="_blank">Tasks Page</a><br>
+                    2. Or go to <a href="/employer/tasks/52" target="_blank">Task Detail Page</a><br>
+                    3. Tasks should now load properly!
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Coworking Auth</title>
+</head>
+<body>
+    <h1>Coworking Authentication Debug</h1>
+    <div id="output"></div>
+    
+    <script>
+        function log(message) {
+            document.getElementById('output').innerHTML += '<p>' + message + '</p>';
+            console.log(message);
+        }
+        
+        // Check localStorage
+        log('=== LOCALSTORAGE DEBUG ===');
+        log('Token: ' + localStorage.getItem('token'));
+        log('Role: ' + localStorage.getItem('role'));
+        log('UserRole: ' + localStorage.getItem('userRole'));
+        log('LastActivity: ' + localStorage.getItem('lastActivity'));
+        
+        // Test login
+        async function testLogin() {
+            log('\n=== TESTING LOGIN ===');
+            try {
+                const response = await fetch('http://localhost:8001/coworking/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: 'pjaspell@yahoo.com',
+                        password: 'admin1'
+                    })
+                });
+                
+                const data = await response.json();
+                log('Login response: ' + JSON.stringify(data));
+                
+                if (data.access_token) {
+                    localStorage.setItem('token', data.access_token);
+                    localStorage.setItem('role', 'coworking');
+                    localStorage.setItem('lastActivity', Date.now().toString());
+                    
+                    log('Token stored: ' + localStorage.getItem('token'));
+                    log('Role stored: ' + localStorage.getItem('role'));
+                    
+                    // Test /coworking/me endpoint
+                    log('\n=== TESTING /coworking/me ===');
+                    const meResponse = await fetch('http://localhost:8001/coworking/me', {
+                        headers: {
+                            'Authorization': 'Bearer ' + data.access_token,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    
+                    if (meResponse.ok) {
+                        const meData = await meResponse.json();
+                        log('Me response: ' + JSON.stringify(meData));
+                    } else {
+                        log('Me request failed: ' + meResponse.status + ' ' + meResponse.statusText);
+                    }
+                }
+            } catch (error) {
+                log('Login error: ' + error.message);
+            }
+        }
+        
+        // Auto-run test
+        testLogin();
+    </script>
+</body>
+</html>

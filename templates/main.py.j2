@@ -1,0 +1,13 @@
+from fastapi import FastAPI
+from app.routes import {{ ', '.join(role_files) }}
+
+app = FastAPI()
+
+# Include routes
+{% for role in role_files %}
+app.include_router({{ role }}.router)
+{% endfor %}
+
+@app.get("/")
+def root():
+    return {"message": "Second Hire API is running"}

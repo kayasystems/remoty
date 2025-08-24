@@ -1,0 +1,18 @@
+{
+  "name": "theremoty-saas",
+  "version": "1.0.0",
+  "description": "Remote work SaaS platform with coworking spaces and employee management",
+  "scripts": {
+    "dev": "concurrently \"npm run frontend\" \"npm run backend\"",
+    "frontend": "cd frontend && npm start",
+    "backend": "cd backend && python main.py",
+    "build": "cd frontend && npm run build",
+    "deploy": "vercel --prod"
+  },
+  "keywords": ["saas", "remote-work", "coworking", "employee-management"],
+  "author": "TheRemoty",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^7.6.0"
+  }
+}

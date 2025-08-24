@@ -1,0 +1,100 @@
+{
+  "project_name": "Second Hire MVP",
+
+  "roles": ["employer", "admin", "employee"],
+
+  "features": {
+    "employer": [
+      "register",
+      "login",
+      "dashboard",
+      "invite_employee",
+      "view_employee_list",
+      "book_coworking_for_employee",
+      "view_available_coworking_spaces",
+      "select_booking_package",
+      "view_coworking_space_details",
+      "view_bookings_made",
+      "view_employee_attendance",
+      "view_employees_on_map",
+      "receive_booking_confirmation_alerts"
+    ],
+    "employee": [
+      "register_with_invite_token",
+      "login",
+      "clock_in",
+      "clock_out",
+      "view_coworking_booking_details",
+      "view_distance_to_coworking_space",
+      "open_map_for_directions",
+      "receive_booking_notification"
+    ],
+    "admin": [
+      "login_only",
+      "view_total_employers",
+      "view_total_employees",
+      "view_total_bookings",
+      "view_all_employers",
+      "view_all_employees",
+      "add_coworking_listing",
+      "edit_coworking_listing",
+      "verify_coworking_listing",
+      "view_all_coworking_listings",
+      "view_all_bookings",
+      "generate_platform_activity_report"
+    ]
+  },
+
+  "models": {
+    "Employer": {
+      "name": "string",
+      "email": "string",
+      "password_hash": "string"
+    },
+    "Employee": {
+      "name": "string",
+      "email": "string",
+      "password_hash": "string",
+      "employer_id": "int",
+      "current_location": "string"
+    },
+    "InviteToken": {
+      "token": "string",
+      "employer_id": "int",
+      "is_used": "bool",
+      "expires_at": "datetime"
+    },
+    "CoworkingSpaceListing": {
+      "title": "string",
+      "description": "string",
+      "address": "string",
+      "city": "string",
+      "latitude": "float",
+      "longitude": "float",
+      "price_per_hour": "float",
+      "price_per_day": "float",
+      "price_per_week": "float",
+      "price_per_month": "float",
+      "is_verified": "bool"
+    },
+    "CoworkingBooking": {
+      "employee_id": "int",
+      "employer_id": "int",
+      "coworking_listing_id": "int",
+      "package_type": "enum('hourly', 'daily', 'weekly', 'monthly')",
+      "package_quantity": "int",
+      "date": "date",
+      "start_time": "time",
+      "end_time": "time",
+      "total_cost": "float",
+      "created_at": "datetime"
+    },
+    "Attendance": {
+      "employee_id": "int",
+      "employer_id": "int",
+      "date": "date",
+      "clock_in": "datetime",
+      "clock_out": "datetime"
+    }
+  }
+}

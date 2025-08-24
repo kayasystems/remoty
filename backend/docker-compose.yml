@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  # Employer Module - Independent Service
+  employer-api:
+    build: .
+    container_name: remoty-employer-api
+    ports:
+      - "8000:8000"
+    environment:
+      - MODULE=employer
+      - DATABASE_URL=sqlite:///./secondhire.db
+    volumes:
+      - .:/app
+      - ./secondhire.db:/app/secondhire.db
+    command: python start_employer.py
+    restart: unless-stopped
+    networks:
+      - remoty-network
+
+  # Coworking Module - Independent Service  
+  coworking-api:
+    build: .
+    container_name: remoty-coworking-api
+    ports:
+      - "8001:8001"
+    environment:
+      - MODULE=coworking
+      - DATABASE_URL=sqlite:///./secondhire.db
+    volumes:
+      - .:/app
+      - ./secondhire.db:/app/secondhire.db
+    command: python start_coworking.py
+    restart: unless-stopped
+    networks:
+      - remoty-network
+
+networks:
+  remoty-network:
+    driver: bridge
+
+volumes:
+  db-data:

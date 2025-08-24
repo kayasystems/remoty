@@ -1,0 +1,21 @@
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
+from app.schemas import {{ role }}  # Adjust if needed
+from app.database import get_db
+
+router = APIRouter(
+    prefix="/{{ role }}",
+    tags=["{{ role.capitalize() }}"]
+)
+
+# Example placeholder routes
+@router.get("/dashboard")
+def get_{{ role }}_dashboard():
+    return {"message": "{{ role }} dashboard"}
+
+@router.post("/login")
+def {{ role }}_login():
+    return {"message": "{{ role }} login"}
+
+# Add more endpoints below as needed for:
+# {{ features|join(', ') }}
