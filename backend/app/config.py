@@ -2,12 +2,12 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    DATABASE_URL: str
-    SECRET_KEY: str
+    DATABASE_URL: str = "sqlite:///./app.db"
+    SECRET_KEY: str = "default-secret-key-change-in-production"
     ENV: str = "development"
     USE_FAKE_GEOCODING: bool = False
-    GOOGLE_MAPS_API_KEY: str  # ✅ Added for geocoding support
-    STRIPE_SECRET_KEY: str  # ✅ Added for Stripe payment processing
+    GOOGLE_MAPS_API_KEY: str = "placeholder-google-maps-key"  # ✅ Added for geocoding support
+    STRIPE_SECRET_KEY: str = "placeholder-stripe-key"  # ✅ Added for Stripe payment processing
 
     class Config:
         env_file = ".env"
