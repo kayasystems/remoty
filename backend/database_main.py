@@ -70,14 +70,6 @@ def health_check():
 
 @app.post("/employer/login", response_model=LoginResponse)
 def employer_login(request: LoginRequest, db: Session = Depends(get_db)):
-    # Temporary: Allow specific test credentials while database is being set up
-    if request.email == "farrukh.naseem@kayasystems.com" and request.password == "admin1":
-        mock_token = f"mock_token_1_employer"
-        return LoginResponse(
-            access_token=mock_token,
-            user_type="employer"
-        )
-    
     # Query employer from database
     employer = db.query(Employer).filter(Employer.email == request.email).first()
     
