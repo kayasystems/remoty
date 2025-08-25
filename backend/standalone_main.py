@@ -231,7 +231,7 @@ def search_coworking_spaces(request: CoworkingSearchRequest):
         cursor.execute("""
             SELECT id, title, description, address, city, latitude, longitude, 
                    price_per_hour, price_per_day, price_per_week, price_per_month,
-                   state, amenities, images, country, packages,
+                   is_verified, state, amenities, images, country, packages,
                    (6371 * acos(cos(radians(?)) * cos(radians(latitude)) * 
                     cos(radians(longitude) - radians(?)) + 
                     sin(radians(?)) * sin(radians(latitude)))) AS distance_km
@@ -251,10 +251,10 @@ def search_coworking_spaces(request: CoworkingSearchRequest):
             full_address = space[3]  # address
             if space[4]:  # city
                 full_address += f", {space[4]}"
-            if space[11]:  # state
-                full_address += f", {space[11]}"
-            if space[14]:  # country
-                full_address += f", {space[14]}"
+            if space[12]:  # state
+                full_address += f", {space[12]}"
+            if space[15]:  # country
+                full_address += f", {space[15]}"
             
             result.append(CoworkingSpace(
                 id=space[0],
@@ -262,17 +262,17 @@ def search_coworking_spaces(request: CoworkingSearchRequest):
                 description=space[2],
                 address=space[3],
                 city=space[4],
-                state=space[11],
-                country=space[14],
+                state=space[12],
+                country=space[15],
                 latitude=space[5],
                 longitude=space[6],
                 price_per_hour=space[7],
                 price_per_day=space[8],
                 price_per_week=space[9],
                 price_per_month=space[10],
-                amenities=space[12],
-                packages=space[15],
-                distance_km=round(space[16], 2),
+                amenities=space[13],
+                packages=space[16],
+                distance_km=round(space[17], 2),
                 full_address=full_address
             ))
         
