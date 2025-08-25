@@ -28,13 +28,13 @@ export default function RequireAuth({ children }) {
         
         if (currentPath.includes('/employer')) {
           console.log('🔐 RequireAuth: Using employerApi for validation');
-          await employerApi.get('/employer/me');
+          await employerApi.get('/employer/profile');
         } else if (currentPath.includes('/coworking')) {
           console.log('🔐 RequireAuth: Using coworkingApi for validation');
           await coworkingApi.get('/coworking/me');
         } else {
           console.log('🔐 RequireAuth: Using employerApi as default');
-          await employerApi.get('/employer/me');
+          await employerApi.get('/employer/profile');
         }
         console.log('🔐 RequireAuth: Token validation successful');
         setIsAuthenticated(true);
