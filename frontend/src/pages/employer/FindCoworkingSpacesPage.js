@@ -1356,7 +1356,7 @@ export default function FindCoworkingSpacesPage() {
                                             // Use thumbnail URLs for better performance
                                             const thumbnailUrl = image.thumbnail_medium_url || image.thumbnail_url || image.url;
                                             console.log('✅ Final URL being used:', thumbnailUrl);
-                                            return thumbnailUrl.startsWith('http') ? thumbnailUrl : `http://localhost:8001${thumbnailUrl}`;
+                                            return thumbnailUrl.startsWith('http') ? thumbnailUrl : `${process.env.REACT_APP_API_URL}${thumbnailUrl}`;
                                           })()}
                                           alt={`${pkg.name} - Image ${imgIndex + 1}`}
                                           style={{
@@ -1930,7 +1930,7 @@ export default function FindCoworkingSpacesPage() {
                     if (!image) return '';
                     // Use original high-quality image for main carousel display
                     const originalUrl = image.image_url || image.url;
-                    return originalUrl.startsWith('http') ? originalUrl : `http://localhost:8001${originalUrl}`;
+                    return originalUrl.startsWith('http') ? originalUrl : `${process.env.REACT_APP_API_URL}${originalUrl}`;
                   })()}
                   alt={`Image ${carouselStartIndex + 1}`}
                   style={{
@@ -2003,7 +2003,7 @@ export default function FindCoworkingSpacesPage() {
                         src={(() => {
                           // Use small thumbnail for navigation, fallback to medium, then original
                           const thumbnailUrl = image.thumbnail_small_url || image.thumbnail_medium_url || image.url;
-                          return thumbnailUrl.startsWith('http') ? thumbnailUrl : `http://localhost:8001${thumbnailUrl}`;
+                          return thumbnailUrl.startsWith('http') ? thumbnailUrl : `${process.env.REACT_APP_API_URL}${thumbnailUrl}`;
                         })()}
                         alt={`Thumbnail ${index + 1}`}
                         style={{
