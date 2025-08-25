@@ -10,12 +10,9 @@ import bcrypt
 import os
 from datetime import datetime
 import math
-# Try to import coworking router; if unavailable, keep app running and rely on direct endpoints
-try:
-    from coworking_module.routes.coworking_complete import router as coworking_router
-except Exception as e:
-    coworking_router = None
-    print(f"[startup] Coworking router not loaded: {e}")
+# Disable coworking router to prevent database conflicts; use direct endpoint instead
+coworking_router = None
+print("[startup] Using direct coworking endpoints instead of module router")
 
 app = FastAPI(title="Remoty API", version="1.0.0")
 
