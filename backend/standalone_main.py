@@ -48,6 +48,13 @@ class EmployerProfile(BaseModel):
     company_name: Optional[str] = None
     first_name: Optional[str] = None
     last_name: Optional[str] = None
+    address: Optional[str] = None
+    city: Optional[str] = None
+    state: Optional[str] = None
+    zip_code: Optional[str] = None
+    country: Optional[str] = None
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
 
 class Employee(BaseModel):
     id: int
@@ -130,31 +137,43 @@ def employer_login(request: LoginRequest):
 
 @app.get("/employer/profile", response_model=EmployerProfile)
 def get_employer_profile():
-    # For testing, return a mock profile
-    # In production, you'd extract user ID from JWT token
     conn = get_db_connection()
     cursor = conn.cursor()
     
     try:
-        # Get first employer for testing
-        cursor.execute("SELECT id, email, company_name, first_name, last_name FROM employers LIMIT 1")
+        # Get first employer for testing with full address data
+        cursor.execute("""
+            SELECT id, email, company_name, first_name, last_name, 
+                   address, city, state, zip_code, country, latitude, longitude 
+            FROM employers LIMIT 1
+        """)
         employer = cursor.fetchone()
         
         if not employer:
             raise HTTPException(status_code=404, detail="Employer not found")
         
-        employer_id, email, company_name, first_name, last_name = employer
-        
         return EmployerProfile(
-            id=employer_id,
-            email=email,
-            company_name=company_name,
-            first_name=first_name,
-            last_name=last_name
+            id=employer[0],
+            email=employer[1],
+            company_name=employer[2],
+            first_name=employer[3],
+            last_name=employer[4],
+            address=employer[5],
+            city=employer[6],
+            state=employer[7],
+            zip_code=employer[8],
+            country=employer[9],
+            latitude=employer[10],
+            longitude=employer[11]
         )
     
     finally:
         conn.close()
+
+# Add alias endpoint for frontend compatibility
+@app.get("/employer/me", response_model=EmployerProfile)
+def get_employer_me():
+    return get_employer_profile()
 
 @app.get("/employer/employees", response_model=List[Employee])
 def get_employees():
