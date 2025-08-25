@@ -4,7 +4,8 @@ from pydantic import BaseModel
 from passlib.context import CryptContext
 import sqlite3
 import os
-from typing import Optional
+import math
+from typing import Optional, List
 
 app = FastAPI(title="Remoty API", version="1.0.0")
 
@@ -47,6 +48,46 @@ class EmployerProfile(BaseModel):
     company_name: Optional[str] = None
     first_name: Optional[str] = None
     last_name: Optional[str] = None
+
+class Employee(BaseModel):
+    id: int
+    first_name: str
+    last_name: str
+    email: str
+    address: Optional[str] = None
+    city: Optional[str] = None
+    country: Optional[str] = None
+    phone_number: Optional[str] = None
+    status: Optional[str] = None
+
+class CoworkingSpace(BaseModel):
+    id: int
+    title: str
+    description: Optional[str] = None
+    address: str
+    city: str
+    state: Optional[str] = None
+    country: str
+    latitude: float
+    longitude: float
+    price_per_hour: Optional[float] = None
+    price_per_day: Optional[float] = None
+    price_per_week: Optional[float] = None
+    price_per_month: Optional[float] = None
+    amenities: Optional[str] = None
+    packages: Optional[str] = None
+    distance_km: Optional[float] = None
+    full_address: Optional[str] = None
+
+class CoworkingSearchRequest(BaseModel):
+    latitude: float
+    longitude: float
+    radius_km: float = 10
+    address: Optional[str] = None
+    city: Optional[str] = None
+    state: Optional[str] = None
+    zip_code: Optional[str] = None
+    country: Optional[str] = None
 
 # Routes
 @app.get("/")
@@ -114,6 +155,113 @@ def get_employer_profile():
     
     finally:
         conn.close()
+
+@app.get("/employer/employees", response_model=List[Employee])
+def get_employees():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        cursor.execute("""
+            SELECT id, first_name, last_name, email, address, city, country, 
+                   phone_number, status 
+            FROM employees 
+            ORDER BY first_name, last_name
+        """)
+        employees = cursor.fetchall()
+        
+        result = []
+        for emp in employees:
+            result.append(Employee(
+                id=emp[0],
+                first_name=emp[1],
+                last_name=emp[2],
+                email=emp[3],
+                address=emp[4],
+                city=emp[5],
+                country=emp[6],
+                phone_number=emp[7],
+                status=emp[8]
+            ))
+        
+        return result
+    
+    finally:
+        conn.close()
+
+@app.post("/employer/employer-profile-coworking-spaces", response_model=List[CoworkingSpace])
+def search_coworking_spaces(request: CoworkingSearchRequest):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        # Calculate distance using Haversine formula in SQL
+        cursor.execute("""
+            SELECT id, title, description, address, city, state, country,
+                   latitude, longitude, price_per_hour, price_per_day, 
+                   price_per_week, price_per_month, amenities, packages,
+                   (6371 * acos(cos(radians(?)) * cos(radians(latitude)) * 
+                   cos(radians(longitude) - radians(?)) + sin(radians(?)) * 
+                   sin(radians(latitude)))) AS distance_km
+            FROM coworkingspacelistings
+            HAVING distance_km <= ?
+            ORDER BY distance_km
+        """, (request.latitude, request.longitude, request.latitude, request.radius_km))
+        
+        spaces = cursor.fetchall()
+        
+        result = []
+        for space in spaces:
+            # Build full address
+            full_address = space[3]  # address
+            if space[4]:  # city
+                full_address += f", {space[4]}"
+            if space[5]:  # state
+                full_address += f", {space[5]}"
+            if space[6]:  # country
+                full_address += f", {space[6]}"
+            
+            result.append(CoworkingSpace(
+                id=space[0],
+                title=space[1],
+                description=space[2],
+                address=space[3],
+                city=space[4],
+                state=space[5],
+                country=space[6],
+                latitude=space[7],
+                longitude=space[8],
+                price_per_hour=space[9],
+                price_per_day=space[10],
+                price_per_week=space[11],
+                price_per_month=space[12],
+                amenities=space[13],
+                packages=space[14],
+                distance_km=round(space[15], 2),
+                full_address=full_address
+            ))
+        
+        return result
+    
+    finally:
+        conn.close()
+
+@app.get("/employer/coworking-space/{space_id}/images")
+def get_space_images(space_id: int):
+    # Return mock image data for now since we don't have images in the database
+    return {
+        "general_images": [
+            "https://via.placeholder.com/400x300?text=Workspace+1",
+            "https://via.placeholder.com/400x300?text=Workspace+2"
+        ],
+        "packages": [
+            {
+                "name": "Hot Desk",
+                "images": ["https://via.placeholder.com/400x300?text=Hot+Desk"]
+            }
+        ],
+        "total_images": 3
+    }
 
 if __name__ == "__main__":
     import uvicorn
