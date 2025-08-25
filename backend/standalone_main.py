@@ -229,8 +229,9 @@ def search_coworking_spaces(request: CoworkingSearchRequest):
         
         # Calculate distance using Haversine formula in SQL
         cursor.execute("""
-            SELECT id, title, description, address, city, state, country,
-                   latitude, longitude, price_per_hour, amenities, images,
+            SELECT id, title, description, address, city, latitude, longitude, 
+                   price_per_hour, price_per_day, price_per_week, price_per_month,
+                   state, amenities, images, country, packages,
                    (6371 * acos(cos(radians(?)) * cos(radians(latitude)) * 
                     cos(radians(longitude) - radians(?)) + 
                     sin(radians(?)) * sin(radians(latitude)))) AS distance_km
@@ -250,10 +251,10 @@ def search_coworking_spaces(request: CoworkingSearchRequest):
             full_address = space[3]  # address
             if space[4]:  # city
                 full_address += f", {space[4]}"
-            if space[5]:  # state
-                full_address += f", {space[5]}"
-            if space[6]:  # country
-                full_address += f", {space[6]}"
+            if space[11]:  # state
+                full_address += f", {space[11]}"
+            if space[14]:  # country
+                full_address += f", {space[14]}"
             
             result.append(CoworkingSpace(
                 id=space[0],
@@ -261,17 +262,17 @@ def search_coworking_spaces(request: CoworkingSearchRequest):
                 description=space[2],
                 address=space[3],
                 city=space[4],
-                state=space[5],
-                country=space[6],
-                latitude=space[7],
-                longitude=space[8],
-                price_per_hour=space[9],
-                price_per_day=space[10],
-                price_per_week=space[11],
-                price_per_month=space[12],
-                amenities=space[13],
-                packages=space[14],
-                distance_km=round(space[15], 2),
+                state=space[11],
+                country=space[14],
+                latitude=space[5],
+                longitude=space[6],
+                price_per_hour=space[7],
+                price_per_day=space[8],
+                price_per_week=space[9],
+                price_per_month=space[10],
+                amenities=space[12],
+                packages=space[15],
+                distance_km=round(space[16], 2),
                 full_address=full_address
             ))
         
