@@ -4,6 +4,7 @@ from fastapi.security import HTTPBearer
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from typing import List, Optional
+from passlib.context import CryptContext
 import sqlite3
 import bcrypt
 import os
