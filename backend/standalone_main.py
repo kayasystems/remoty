@@ -10,7 +10,12 @@ import bcrypt
 import os
 from datetime import datetime
 import math
-from coworking_module.routes.coworking_complete import router as coworking_router
+# Try to import coworking router; if unavailable, keep app running and rely on direct endpoints
+try:
+    from coworking_module.routes.coworking_complete import router as coworking_router
+except Exception as e:
+    coworking_router = None
+    print(f"[startup] Coworking router not loaded: {e}")
 
 app = FastAPI(title="Remoty API", version="1.0.0")
 
@@ -130,8 +135,9 @@ def read_root():
 def health_check():
     return {"status": "healthy", "service": "remoty-api"}
 
-# Mount coworking module routes (serves /coworking/login and others)
-app.include_router(coworking_router, prefix="/coworking")
+# Mount coworking module routes (serves /coworking/login and others) if available
+if coworking_router is not None:
+    app.include_router(coworking_router, prefix="/coworking")
 
 # Direct coworking login endpoint to ensure availability on production
 @app.post("/coworking/login", response_model=CoworkingLoginResponse)
