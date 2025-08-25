@@ -230,16 +230,16 @@ def search_coworking_spaces(request: CoworkingSearchRequest):
         # Calculate distance using Haversine formula in SQL
         cursor.execute("""
             SELECT id, title, description, address, city, state, country,
-                   latitude, longitude, price_per_hour, price_per_day, 
-                   price_per_week, price_per_month, amenities, packages,
+                   latitude, longitude, price_per_hour, amenities, images,
                    (6371 * acos(cos(radians(?)) * cos(radians(latitude)) * 
-                   cos(radians(longitude) - radians(?)) + sin(radians(?)) * 
-                   sin(radians(latitude)))) AS distance_km
+                    cos(radians(longitude) - radians(?)) + 
+                    sin(radians(?)) * sin(radians(latitude)))) AS distance_km
             FROM coworkingspacelistings
-            WHERE latitude IS NOT NULL AND longitude IS NOT NULL
-            HAVING distance_km <= ?
+            WHERE (6371 * acos(cos(radians(?)) * cos(radians(latitude)) * 
+                   cos(radians(longitude) - radians(?)) + 
+                   sin(radians(?)) * sin(radians(latitude)))) <= ?
             ORDER BY distance_km
-        """, (search_lat, search_lng, search_lat, request.radius_km))
+        """, (search_lat, search_lng, search_lat, search_lat, search_lng, search_lat, request.radius_km))
         
         spaces = cursor.fetchall()
         print(f"📍 Found {len(spaces)} spaces within {request.radius_km}km")

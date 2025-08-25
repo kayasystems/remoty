@@ -48,8 +48,15 @@ MOCK_USERS = {
         "name": "Test Employer",
         "user_type": "employer"
     },
-    "employee@test.com": {
+    "farrukh.naseem@kayasystems.com": {
         "id": 2,
+        "email": "farrukh.naseem@kayasystems.com",
+        "password": "admin1",
+        "name": "Farrukh Naseem",
+        "user_type": "employer"
+    },
+    "employee@test.com": {
+        "id": 3,
         "email": "employee@test.com", 
         "password": "password123",
         "name": "Test Employee",
