@@ -582,10 +582,10 @@ def get_space_images(space_id: int):
         # Get all images for the coworking space from database
         cursor.execute("""
             SELECT id, image_url, thumbnail_url, thumbnail_small_url, thumbnail_medium_url, 
-                   alt_text, is_primary, display_order
+                   image_description, is_primary, id
             FROM coworking_images 
-            WHERE coworking_space_id = ? 
-            ORDER BY is_primary DESC, display_order ASC, id ASC
+            WHERE space_id = ? 
+            ORDER BY is_primary DESC, id ASC
         """, (space_id,))
         
         images = cursor.fetchall()
@@ -609,7 +609,6 @@ def get_space_images(space_id: int):
                 "thumbnail_medium_url": img[4],
                 "alt_text": img[5] or f"Coworking space image {img[0]}",
                 "is_primary": bool(img[6]),
-                "display_order": img[7] or 0,
                 # Use the actual image URL from database
                 "url": img[1]  # This is what the frontend expects
             }
