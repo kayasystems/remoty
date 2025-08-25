@@ -35,11 +35,13 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:3000",
         "https://theremoty.com",
-        "https://www.theremoty.com"
+        "https://www.theremoty.com",
+        "https://remoty.onrender.com"
     ],
+    allow_origin_regex=r"https://(.*\\.)?theremoty\\.com",
     allow_credentials=True,
     allow_methods=["*"],
-    allow_headers=["*"],
+    allow_headers=["*"]
 )
 
 # Password hashing
@@ -144,12 +146,18 @@ if coworking_router is not None:
 def coworking_login(request: CoworkingLoginRequest):
     # Minimal immediate fix: accept a known coworking user credential
     # Replace with real DB-backed auth when router is live on Render
+    print(f"[coworking_login] Attempt for email={request.email}")
     if request.email.lower() == "pjaspell@yahoo.com" and request.password == "admin1":
         return CoworkingLoginResponse(access_token="mock_token_coworking_1")
     # Mirror module behavior: 404 if email not found, 401 if wrong password
     # Since we don't have DB here, treat all others as not found
     from fastapi import HTTPException
     raise HTTPException(status_code=404, detail="No account found with this email address. Please check your email or register for a new account.")
+
+# Preflight support (explicit), though CORSMiddleware should handle it
+@app.options("/coworking/login")
+def options_coworking_login():
+    return {"status": "ok"}
 
 @app.post("/employer/login", response_model=LoginResponse)
 def employer_login(request: LoginRequest):
