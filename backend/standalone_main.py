@@ -265,6 +265,236 @@ def search_coworking_spaces(request: CoworkingSearchRequest):
     finally:
         conn.close()
 
+# Dashboard and stats endpoints
+@app.get("/employer/dashboard/stats")
+def get_dashboard_stats():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        # Get employee count
+        cursor.execute("SELECT COUNT(*) FROM employees")
+        employee_count = cursor.fetchone()[0]
+        
+        # Get active bookings count
+        cursor.execute("SELECT COUNT(*) FROM coworking_bookings WHERE payment_status = 'succeeded'")
+        active_bookings = cursor.fetchone()[0]
+        
+        # Get task count (mock for now)
+        active_tasks = 0
+        
+        return {
+            "employees": employee_count,
+            "active_bookings": active_bookings,
+            "active_tasks": active_tasks,
+            "total_spent": 0
+        }
+    finally:
+        conn.close()
+
+@app.get("/employer/employees/attendance-stats")
+def get_attendance_stats(days: int = 30):
+    # Mock attendance data for now
+    return {
+        "employees": [
+            {"id": 1, "name": "Ayaz", "attendance_rate": 95.5, "days_present": 29, "days_absent": 1},
+            {"id": 2, "name": "Mesam", "attendance_rate": 87.3, "days_present": 26, "days_absent": 4}
+        ]
+    }
+
+@app.get("/employer/employees/task-performance")
+def get_task_performance(days: int = 30):
+    # Mock task performance data
+    return {
+        "employees": [
+            {"id": 1, "name": "Ayaz", "completed_tasks": 15, "pending_tasks": 3, "performance_score": 92.5},
+            {"id": 2, "name": "Mesam", "completed_tasks": 12, "pending_tasks": 5, "performance_score": 85.2}
+        ]
+    }
+
+# Bookings endpoints
+@app.get("/employer/bookings")
+def get_bookings(employee_id: int = None):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        if employee_id:
+            cursor.execute("""
+                SELECT cb.*, cs.title as space_title, e.first_name, e.last_name
+                FROM coworking_bookings cb
+                JOIN coworkingspacelistings cs ON cb.coworking_space_id = cs.id
+                JOIN employees e ON cb.employee_id = e.id
+                WHERE cb.employee_id = ?
+                ORDER BY cb.created_at DESC
+            """, (employee_id,))
+        else:
+            cursor.execute("""
+                SELECT cb.*, cs.title as space_title, e.first_name, e.last_name
+                FROM coworking_bookings cb
+                JOIN coworkingspacelistings cs ON cb.coworking_space_id = cs.id
+                JOIN employees e ON cb.employee_id = e.id
+                ORDER BY cb.created_at DESC
+            """)
+        
+        bookings = cursor.fetchall()
+        result = []
+        
+        for booking in bookings:
+            result.append({
+                "id": booking[0],
+                "employer_id": booking[1],
+                "employee_id": booking[2],
+                "coworking_space_id": booking[3],
+                "booking_type": booking[4],
+                "subscription_mode": booking[5],
+                "is_ongoing": booking[6],
+                "start_date": booking[7],
+                "end_date": booking[8],
+                "days_of_week": booking[9],
+                "duration_per_day": booking[10],
+                "total_cost": booking[11],
+                "notes": booking[12],
+                "created_at": booking[13],
+                "payment_status": booking[15],
+                "space_title": booking[17],
+                "employee_name": f"{booking[18]} {booking[19]}"
+            })
+        
+        return result
+    finally:
+        conn.close()
+
+@app.get("/employer/bookings/{booking_id}")
+def get_booking_detail(booking_id: int):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        cursor.execute("""
+            SELECT cb.*, cs.title as space_title, cs.address, cs.city, e.first_name, e.last_name
+            FROM coworking_bookings cb
+            JOIN coworkingspacelistings cs ON cb.coworking_space_id = cs.id
+            JOIN employees e ON cb.employee_id = e.id
+            WHERE cb.id = ?
+        """, (booking_id,))
+        
+        booking = cursor.fetchone()
+        if not booking:
+            raise HTTPException(status_code=404, detail="Booking not found")
+        
+        return {
+            "id": booking[0],
+            "employer_id": booking[1],
+            "employee_id": booking[2],
+            "coworking_space_id": booking[3],
+            "booking_type": booking[4],
+            "subscription_mode": booking[5],
+            "is_ongoing": booking[6],
+            "start_date": booking[7],
+            "end_date": booking[8],
+            "days_of_week": booking[9],
+            "duration_per_day": booking[10],
+            "total_cost": booking[11],
+            "notes": booking[12],
+            "created_at": booking[13],
+            "payment_status": booking[15],
+            "space_title": booking[17],
+            "space_address": booking[18],
+            "space_city": booking[19],
+            "employee_name": f"{booking[20]} {booking[21]}"
+        }
+    finally:
+        conn.close()
+
+@app.get("/employer/bookings/employee/{employee_id}")
+def get_employee_bookings(employee_id: int):
+    return get_bookings(employee_id=employee_id)
+
+# Employee detail endpoint
+@app.get("/employer/employees/{employee_id}")
+def get_employee_detail(employee_id: int):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        cursor.execute("""
+            SELECT id, first_name, last_name, email, address, city, country, 
+                   phone_number, status, latitude, longitude, created_at
+            FROM employees 
+            WHERE id = ?
+        """, (employee_id,))
+        
+        employee = cursor.fetchone()
+        if not employee:
+            raise HTTPException(status_code=404, detail="Employee not found")
+        
+        return {
+            "id": employee[0],
+            "first_name": employee[1],
+            "last_name": employee[2],
+            "email": employee[3],
+            "address": employee[4],
+            "city": employee[5],
+            "country": employee[6],
+            "phone_number": employee[7],
+            "status": employee[8],
+            "latitude": employee[9],
+            "longitude": employee[10],
+            "created_at": employee[11]
+        }
+    finally:
+        conn.close()
+
+# Tasks endpoints (mock for now)
+@app.get("/employer/tasks")
+def get_tasks(employee_id: int = None):
+    # Mock task data
+    tasks = [
+        {"id": 1, "title": "Complete project setup", "status": "in_progress", "employee_id": 1, "due_date": "2024-01-15"},
+        {"id": 2, "title": "Review documentation", "status": "pending", "employee_id": 2, "due_date": "2024-01-20"}
+    ]
+    
+    if employee_id:
+        tasks = [t for t in tasks if t["employee_id"] == employee_id]
+    
+    return tasks
+
+@app.get("/employer/tasks/{task_id}")
+def get_task_detail(task_id: int):
+    # Mock task detail
+    return {
+        "id": task_id,
+        "title": "Sample Task",
+        "description": "Task description",
+        "status": "in_progress",
+        "employee_id": 1,
+        "due_date": "2024-01-15",
+        "created_at": "2024-01-01"
+    }
+
+# Attendance endpoint (mock)
+@app.get("/employer/attendance/employee/{employee_id}")
+def get_employee_attendance(employee_id: int, start_date: str = None, end_date: str = None):
+    # Mock attendance data
+    return {
+        "employee_id": employee_id,
+        "attendance_records": [
+            {"date": "2024-01-01", "status": "present", "hours_worked": 8},
+            {"date": "2024-01-02", "status": "present", "hours_worked": 8},
+            {"date": "2024-01-03", "status": "absent", "hours_worked": 0}
+        ]
+    }
+
+# Notifications endpoint (mock)
+@app.get("/employer/notifications")
+def get_notifications():
+    return {
+        "notifications": [
+            {"id": 1, "title": "New booking confirmed", "message": "Employee booking confirmed", "read": False, "created_at": "2024-01-01"}
+        ]
+    }
+
 @app.get("/employer/coworking-space/{space_id}/images")
 def get_space_images(space_id: int):
     # Return mock image data for now since we don't have images in the database
