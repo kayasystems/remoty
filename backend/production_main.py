@@ -4,6 +4,7 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel
 from typing import Optional
 import os
+from coworking_module.routes.coworking_complete import router as coworking_router
 
 app = FastAPI(title="Remoty API", version="1.0.0")
 
@@ -116,6 +117,9 @@ def get_employer_profile(credentials: HTTPAuthorizationCredentials = Depends(sec
 @app.get("/employer/dashboard")
 def employer_dashboard(credentials: HTTPAuthorizationCredentials = Depends(security)):
     return {"message": "Employer dashboard data", "status": "success"}
+
+# Mount coworking module routes (serves /coworking/login and others)
+app.include_router(coworking_router, prefix="/coworking")
 
 @app.get("/employee/dashboard") 
 def employee_dashboard(credentials: HTTPAuthorizationCredentials = Depends(security)):
