@@ -10,6 +10,7 @@ import bcrypt
 import os
 from datetime import datetime
 import math
+from coworking_module.routes.coworking_complete import router as coworking_router
 
 app = FastAPI(title="Remoty API", version="1.0.0")
 
@@ -118,6 +119,9 @@ def read_root():
 @app.get("/health")
 def health_check():
     return {"status": "healthy", "service": "remoty-api"}
+
+# Mount coworking module routes (serves /coworking/login and others)
+app.include_router(coworking_router, prefix="/coworking")
 
 @app.post("/employer/login", response_model=LoginResponse)
 def employer_login(request: LoginRequest):
