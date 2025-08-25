@@ -575,20 +575,54 @@ def get_notifications():
 
 @app.get("/employer/coworking-space/{space_id}/images")
 def get_space_images(space_id: int):
-    # Return mock image data for now since we don't have images in the database
-    return {
-        "general_images": [
-            "https://via.placeholder.com/400x300?text=Workspace+1",
-            "https://via.placeholder.com/400x300?text=Workspace+2"
-        ],
-        "packages": [
-            {
-                "name": "Hot Desk",
-                "images": ["https://via.placeholder.com/400x300?text=Hot+Desk"]
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        # Get all images for the coworking space from database
+        cursor.execute("""
+            SELECT id, image_url, thumbnail_url, thumbnail_small_url, thumbnail_medium_url, 
+                   alt_text, is_primary, display_order
+            FROM coworking_images 
+            WHERE coworking_space_id = ? 
+            ORDER BY is_primary DESC, display_order ASC, id ASC
+        """, (space_id,))
+        
+        images = cursor.fetchall()
+        
+        if not images:
+            # Return empty structure if no images found
+            return {
+                "general_images": [],
+                "packages": [],
+                "total_images": 0
             }
-        ],
-        "total_images": 3
-    }
+        
+        # Convert database images to the expected format
+        general_images = []
+        for img in images:
+            image_data = {
+                "id": img[0],
+                "image_url": img[1],
+                "thumbnail_url": img[2],
+                "thumbnail_small_url": img[3],
+                "thumbnail_medium_url": img[4],
+                "alt_text": img[5] or f"Coworking space image {img[0]}",
+                "is_primary": bool(img[6]),
+                "display_order": img[7] or 0,
+                # Use the actual image URL from database
+                "url": img[1]  # This is what the frontend expects
+            }
+            general_images.append(image_data)
+        
+        return {
+            "general_images": general_images,
+            "packages": [],  # Package-specific images can be added later
+            "total_images": len(general_images)
+        }
+    
+    finally:
+        conn.close()
 
 if __name__ == "__main__":
     import uvicorn
