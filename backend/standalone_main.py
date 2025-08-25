@@ -345,6 +345,41 @@ def get_attendance_stats(days: int = 30):
         ]
     }
 
+@app.get("/employer/coworking-space-images/{space_id}")
+def get_coworking_space_images(space_id: int):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        # Get all images for the coworking space
+        cursor.execute("""
+            SELECT id, image_url, thumbnail_url, thumbnail_small_url, thumbnail_medium_url, 
+                   alt_text, is_primary, display_order
+            FROM coworking_images 
+            WHERE coworking_space_id = ? 
+            ORDER BY is_primary DESC, display_order ASC, id ASC
+        """, (space_id,))
+        
+        images = cursor.fetchall()
+        
+        result = []
+        for img in images:
+            result.append({
+                "id": img[0],
+                "image_url": img[1],
+                "thumbnail_url": img[2],
+                "thumbnail_small_url": img[3],
+                "thumbnail_medium_url": img[4],
+                "alt_text": img[5] or f"Coworking space image {img[0]}",
+                "is_primary": bool(img[6]),
+                "display_order": img[7] or 0
+            })
+        
+        return result
+    
+    finally:
+        conn.close()
+
 @app.get("/employer/employees/task-performance")
 def get_task_performance(days: int = 30):
     # Mock task performance data
