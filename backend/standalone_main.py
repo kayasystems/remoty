@@ -44,7 +44,7 @@ def verify_password(plain_password, hashed_password):
 
 # Database connection
 def get_db_connection():
-    db_path = os.path.join(os.path.dirname(__file__), "secondhire.db")
+    db_path = os.path.join(os.path.dirname(__file__), "second_hire.db")
     return sqlite3.connect(db_path)
 
 # Pydantic models
