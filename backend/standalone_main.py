@@ -98,8 +98,8 @@ class CoworkingSearchRequest(BaseModel):
 
 # Routes
 @app.get("/")
-def root():
-    return {"message": "Remoty API is running", "status": "healthy"}
+def read_root():
+    return {"message": "Remoty Backend API is running!", "status": "success", "auto_deploy": "enabled"}
 
 @app.get("/health")
 def health_check():
