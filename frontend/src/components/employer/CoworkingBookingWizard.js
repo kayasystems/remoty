@@ -2847,7 +2847,7 @@ export default function CoworkingBookingWizard() {
                                         console.log('🖼️ No imageUrl found, using placeholder');
                                         return '/api/placeholder/100/75';
                                       }
-                                      const finalUrl = imageUrl.startsWith('http') ? imageUrl : `http://localhost:8000${imageUrl}`;
+                                      const finalUrl = imageUrl.startsWith('http') ? imageUrl : `${process.env.REACT_APP_API_URL}${imageUrl}`;
                                       console.log('🖼️ Final URL:', finalUrl);
                                       return finalUrl;
                                     })()}
@@ -5028,7 +5028,7 @@ export default function CoworkingBookingWizard() {
                   const image = carouselImages[carouselStartIndex % carouselImages.length];
                   if (!image) return '';
                   const originalUrl = image.image_url || image.url;
-                  return originalUrl.startsWith('http') ? originalUrl : `http://localhost:8000${originalUrl}`;
+                  return originalUrl.startsWith('http') ? originalUrl : `${process.env.REACT_APP_API_URL}${originalUrl}`;
                 })()}
                 alt={`Space Image ${carouselStartIndex + 1}`}
                 style={{
@@ -5107,7 +5107,7 @@ export default function CoworkingBookingWizard() {
                   <img
                     src={(() => {
                       const thumbnailUrl = image.thumbnail_medium_url || image.thumbnail_url || image.url;
-                      return thumbnailUrl.startsWith('http') ? thumbnailUrl : `http://localhost:8000${thumbnailUrl}`;
+                      return thumbnailUrl.startsWith('http') ? thumbnailUrl : `${process.env.REACT_APP_API_URL}${thumbnailUrl}`;
                     })()}
                     alt={`Thumbnail ${index + 1}`}
                     style={{

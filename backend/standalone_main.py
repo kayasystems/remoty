@@ -1,13 +1,26 @@
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import HTTPBearer
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
-from passlib.context import CryptContext
+from typing import List, Optional
 import sqlite3
+import bcrypt
 import os
+from datetime import datetime
 import math
-from typing import Optional, List
 
 app = FastAPI(title="Remoty API", version="1.0.0")
+
+# Create uploads directory if it doesn't exist
+uploads_dir = "uploads"
+if not os.path.exists(uploads_dir):
+    os.makedirs(uploads_dir)
+    os.makedirs(os.path.join(uploads_dir, "coworking_images"))
+    os.makedirs(os.path.join(uploads_dir, "coworking_images", "thumbnails"))
+
+# Mount static files
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 # CORS middleware
 app.add_middleware(
